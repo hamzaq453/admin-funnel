@@ -1,0 +1,8 @@
+{
+    "schema": "src/app/db/schema.ts",
+    "dialect": "postgresql",
+    "dbConnection": {
+      "connectionString":"postgresql://neondb_owner:3OHq5SmLIRBP@ep-tiny-resonance-a5sa78gh-pooler.us-east-2.aws.neon.tech/leads?sslmode=require"
+    }
+  }
+  
