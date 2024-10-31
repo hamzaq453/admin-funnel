@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -23,19 +23,19 @@ const LeadsPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState<Set<number>>(new Set());
-  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchLeads = async () => {
       setLoading(true);
       try {
         const response = await fetch('/api/leads');
-        if (!response.ok) throw new Error('Failed to fetch leads');
+        if (!response.ok) throw new Error('Fehler beim Abrufen der Leads');
 
         const data = await response.json();
         setLeads(data.allLeads);
       } catch (error) {
-        console.error('Error fetching leads:', error);
+        console.error('Fehler beim Abrufen der Leads:', error);
       } finally {
         setLoading(false);
       }
@@ -66,7 +66,7 @@ const LeadsPage: React.FC = () => {
       setLeads(leads.filter((lead) => !selectedLeads.has(lead.id)));
       setSelectedLeads(new Set());
     } catch (error) {
-      console.error('Error deleting leads:', error);
+      console.error('Fehler beim Löschen der Leads:', error);
     }
   };
 
@@ -77,12 +77,11 @@ const LeadsPage: React.FC = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(data, 'selected_leads.xlsx');
+    saveAs(data, 'ausgewählte_leads.xlsx');
   };
 
   const isAnyLeadSelected = selectedLeads.size > 0;
 
-  // Filtered leads based on search query
   const filteredLeads = leads.filter((lead) =>
     lead.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,62 +96,60 @@ const LeadsPage: React.FC = () => {
           <h1 className="text-xl font-semibold">Leads</h1>
           {isAnyLeadSelected ? (
             <Button onClick={handleDeleteSelected} variant="outline" className="bg-red-100 text-red-600 border border-red-600 hover:bg-red-200">
-              Delete Selected
+              Ausgewählte Löschen
             </Button>
           ) : (
             <Button variant="outline">
-              <Link href="/newLeads">New</Link>
+              <Link href="/newLeads">Neu</Link>
             </Button>
           )}
         </div>
 
         <div className="my-4 flex items-center justify-end space-x-2">
           <Input
-            placeholder="Search this list..."
+            placeholder="Diese Liste durchsuchen..."
             type="text"
-            value={searchQuery} // Bind searchQuery state to Input
-            onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on input change
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <Button variant="ghost">
             <Search className="text-gray-500" />
           </Button>
           <Button onClick={handleDownloadSelected} variant="ghost">
             <Download className="text-gray-500" />
-            <span className="ml-1">Download Selected</span>
+            <span className="ml-1">Ausgewählte Herunterladen</span>
           </Button>
         </div>
 
         <main className="flex flex-col w-full">
           <div className="border rounded-lg shadow-sm w-full overflow-x-auto">
-            <Table className="min-w-full">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">
-                    <input
-                      type="checkbox"
-                      onChange={(e) =>
-                        setSelectedLeads(e.target.checked ? new Set(leads.map((lead) => lead.id)) : new Set())
-                      }
-                      checked={selectedLeads.size === leads.length && leads.length > 0}
-                    />
-                  </TableHead>
-                  <TableHead>Full Name</TableHead>
-                  <TableHead>Customer Experience</TableHead>
-                  <TableHead>Contact Time</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Address</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="loader"></div>
+              </div>
+            ) : (
+              <Table className="min-w-full">
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center">
-                      Loading...
-                    </TableCell>
+                    <TableHead className="w-[50px]">
+                      <input
+                        type="checkbox"
+                        onChange={(e) =>
+                          setSelectedLeads(e.target.checked ? new Set(leads.map((lead) => lead.id)) : new Set())
+                        }
+                        checked={selectedLeads.size === leads.length && leads.length > 0}
+                      />
+                    </TableHead>
+                    <TableHead>Vollständiger Name</TableHead>
+                    <TableHead>Kundenerfahrung</TableHead>
+                    <TableHead>Kontaktzeit</TableHead>
+                    <TableHead>Telefon</TableHead>
+                    <TableHead>E-Mail</TableHead>
+                    <TableHead>Adresse</TableHead>
                   </TableRow>
-                ) : (
-                  filteredLeads.map((lead) => (
+                </TableHeader>
+                <TableBody>
+                  {filteredLeads.map((lead) => (
                     <TableRow key={lead.id} className="text-[16px]">
                       <TableCell>
                         <input
@@ -172,13 +169,29 @@ const LeadsPage: React.FC = () => {
                       <TableCell>{lead.email}</TableCell>
                       <TableCell>{lead.address}</TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </main>
       </div>
+
+      <style jsx>{`
+        .loader {
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #3498db;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   );
 };

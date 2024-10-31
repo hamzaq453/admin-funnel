@@ -4,8 +4,13 @@ import Link from 'next/link';
 const Navbar: React.FC = () => {
   return (
     <nav className="bg-gray-800 text-white px-4 py-3 flex items-center justify-between">
-      <div className="text-xl font-semibold">Admin Panel</div>
-      <ul className="flex space-x-4">
+      <div className="text-xl font-semibold">Admin-Bereich</div>
+      <ul className="flex space-x-6 mx-auto">
+        <li>
+          <Link href="/" className="hover:text-gray-300 transition duration-200">
+            Startseite
+          </Link>
+        </li>
         <li>
           <Link href="/leads" className="hover:text-gray-300 transition duration-200">
             Leads
@@ -13,15 +18,11 @@ const Navbar: React.FC = () => {
         </li>
         <li>
           <Link href="/analytics" className="hover:text-gray-300 transition duration-200">
-            Analytics
-          </Link>
-        </li>
-        <li>
-          <Link href="/settings" className="hover:text-gray-300 transition duration-200">
-            Settings
+            Analysen
           </Link>
         </li>
       </ul>
+      <div className="w-16"></div> {/* Placeholder div for spacing on the right side */}
     </nav>
   );
 };
