@@ -1,10 +1,9 @@
 import LeadDetailPage from '@/app/components/LeadDetailPage';
 
-export default async function LeadPage({
+export default function LeadPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const resolvedParams = await params;
-  return <LeadDetailPage id={resolvedParams.id} />;
+  return <LeadDetailPage id={params.id} />;
 }
