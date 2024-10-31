@@ -152,7 +152,7 @@ const LeadsPage: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredLeads.map((lead, index) => (
+                  filteredLeads.map((lead) => (
                     <TableRow key={lead.id} className="text-[16px]">
                       <TableCell>
                         <input

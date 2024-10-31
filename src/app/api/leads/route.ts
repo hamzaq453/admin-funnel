@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/app/db/dbClient';
 import { leads } from '@/app/db/schema';
-import { NewLead } from '@/app/db/schema';
-import { eq } from 'drizzle-orm'; // Import the eq helper function
 
 // Fetch all leads (GET)
 export async function GET() {
