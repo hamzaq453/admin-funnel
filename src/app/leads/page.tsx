@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { Search, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 
