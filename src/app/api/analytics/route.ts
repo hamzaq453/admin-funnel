@@ -21,16 +21,37 @@ async function fetchAnalyticsData() {
   const response = await analyticsDataClient.properties.runReport({
     property: `properties/${PROPERTY_ID}`,
     requestBody: {
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-      dimensions: [{ name: 'pagePath' }],
-      metrics: [{ name: 'screenPageViews' }],
+      dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+      dimensions: [
+        { name: 'date' },
+        { name: 'country' },
+        { name: 'city' },
+        { name: 'deviceCategory' },
+        { name: 'platform' },
+        { name: 'sessionSource' },
+        { name: 'sessionMedium' },
+        { name: 'landingPagePlusQueryString' },
+      ],
+      metrics: [
+        { name: 'activeUsers' },
+        { name: 'newUsers' },
+        { name: 'engagementRate' },
+        { name: 'averageSessionDuration' },
+        { name: 'bounceRate' },
+        { name: 'eventCount' },
+        { name: 'sessions' },
+        { name: 'screenPageViews' },
+        { name: 'sessionsPerUser' },
+        { name: 'totalRevenue' },
+      ],
     },
   });
+
+  console.log("GA4 API Response (Detailed):", JSON.stringify(response.data, null, 2));
 
   return response.data;
 }
 
-// Export a named GET function instead of default export
 export async function GET() {
   try {
     const data = await fetchAnalyticsData();
