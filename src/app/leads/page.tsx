@@ -92,34 +92,33 @@ const LeadsPage: React.FC = () => {
   return (
     <>
       <div className="bg-white w-full p-4 shadow-md rounded-lg">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Leads</h1>
-          {isAnyLeadSelected ? (
-            <Button onClick={handleDeleteSelected} variant="outline" className="bg-red-100 text-red-600 border border-red-600 hover:bg-red-200">
-              Ausgewählte Löschen
-            </Button>
-          ) : (
-            <Button variant="outline">
-              <Link href="/newLeads">Neu</Link>
-            </Button>
-          )}
-        </div>
+      <div className="flex items-center justify-between flex-wrap">
+        <h1 className="text-xl font-semibold mt-3">Leads</h1>
+        {/* Conditionally rendered delete button or empty space */}
+        {isAnyLeadSelected ? (
+          <Button onClick={handleDeleteSelected} variant="outline" className="bg-red-100 text-red-600 border border-red-600 hover:bg-red-200">
+            Ausgewählte Löschen
+          </Button>
+        ) : (
+          <div></div>
+        )}
+      </div>
 
-        <div className="my-4 flex items-center justify-end space-x-2">
-          <Input
-            placeholder="Diese Liste durchsuchen..."
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Button variant="ghost">
-            <Search className="text-gray-500" />
-          </Button>
-          <Button onClick={handleDownloadSelected} variant="ghost">
-            <Download className="text-gray-500" />
-            <span className="ml-1">Ausgewählte Herunterladen</span>
-          </Button>
-        </div>
+      {/* Search and Download Section */}
+      <div className="my-4 flex flex-col md:flex-row items-center justify-end md:space-x-2 space-y-2 md:space-y-0 w-full">
+        <Input
+          placeholder="Suchen..." // Shorter placeholder in German
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full md:w-64"
+        />
+        
+        <Button onClick={handleDownloadSelected} variant="ghost" className="w-full md:w-auto flex items-center justify-center">
+          <Download className="text-gray-500" />
+          <span className="ml-1">Ausgewählte Herunterladen</span>
+        </Button>
+      </div>
 
         <main className="flex flex-col w-full">
           <div className="border rounded-lg shadow-sm w-full overflow-x-auto">
@@ -141,11 +140,11 @@ const LeadsPage: React.FC = () => {
                       />
                     </TableHead>
                     <TableHead>Vollständiger Name</TableHead>
-                    <TableHead>Kundenerfahrung</TableHead>
-                    <TableHead>Kontaktzeit</TableHead>
+                    <TableHead className="hidden md:table-cell">Kundenerfahrung</TableHead>
+                    <TableHead className="hidden md:table-cell">Kontaktzeit</TableHead>
                     <TableHead>Telefon</TableHead>
-                    <TableHead>E-Mail</TableHead>
-                    <TableHead>Adresse</TableHead>
+                    <TableHead className="hidden md:table-cell">E-Mail</TableHead>
+                    <TableHead className="hidden lg:table-cell">Adresse</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -163,11 +162,11 @@ const LeadsPage: React.FC = () => {
                           {lead.fullName}
                         </Link>
                       </TableCell>
-                      <TableCell>{lead.customerExperience}</TableCell>
-                      <TableCell>{lead.contactTime}</TableCell>
+                      <TableCell className="hidden md:table-cell">{lead.customerExperience}</TableCell>
+                      <TableCell className="hidden md:table-cell">{lead.contactTime}</TableCell>
                       <TableCell>{lead.phone}</TableCell>
-                      <TableCell>{lead.email}</TableCell>
-                      <TableCell>{lead.address}</TableCell>
+                      <TableCell className="hidden md:table-cell">{lead.email}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{lead.address}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -178,19 +177,19 @@ const LeadsPage: React.FC = () => {
       </div>
 
       <style jsx>{`
-        .loader {
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #3498db;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          animation: spin 1s linear infinite;
-        }
+          .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+          }
 
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
       `}</style>
     </>
   );

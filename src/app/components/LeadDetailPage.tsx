@@ -22,7 +22,7 @@ interface LeadDetailPageProps {
 const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('Neu'); // Default to 'Neu' initially
+  const [status, setStatus] = useState('Neu');
   const [isStatusChanged, setIsStatusChanged] = useState(false);
   const router = useRouter();
 
@@ -35,8 +35,6 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
 
         const data = await response.json();
         setLead(data.lead);
-        
-        // Set status to 'Neu' if it is not set or missing
         setStatus(data.lead.status || 'Neu'); 
       } catch (error) {
         console.error('Fehler beim Abrufen des Leads:', error);
@@ -62,7 +60,7 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
       });
 
       if (response.ok) {
-        setIsStatusChanged(false); // Reset the save button visibility
+        setIsStatusChanged(false);
       } else {
         throw new Error('Fehler beim Aktualisieren des Status');
       }
@@ -78,7 +76,7 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
       });
 
       if (response.ok) {
-        router.back(); // Navigate back to the leads list after deletion
+        router.back();
       } else {
         throw new Error('Fehler beim Löschen des Leads');
       }
@@ -89,7 +87,7 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
         <div className="loader"></div>
       </div>
     );
@@ -98,8 +96,8 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
   if (!lead) return <p>Lead nicht gefunden</p>;
 
   return (
-    <div className="max-w-full ml-2 bg-white p-2 rounded-lg shadow-md mt-10">
-      <header className="flex justify-between items-center mb-4">
+    <div className="max-w-full ml-2 bg-white p-4 rounded-lg shadow-md mt-10">
+      <header className="flex flex-col md:flex-row md:justify-between items-center mb-4 space-y-4 md:space-y-0">
         <h1 className="text-2xl font-semibold text-gray-800">Lead-Details</h1>
         <Button
           variant="outline"
@@ -110,16 +108,15 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
         </Button>
       </header>
 
-      {/* Status Buttons */}
-      <div className="flex space-x-4 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         {['Neu', 'Ausstehend', 'In Bearbeitung', 'Genehmigt', 'Abgelehnt'].map((option) => (
           <button
             key={option}
             onClick={() => handleStatusChange(option)}
-            className={`px-4 py-2 rounded-full w-full font-semibold ${
+            className={`px-4 py-2 rounded-full w-full md:w-auto font-semibold ${
               status === option
-                ? 'bg-blue-500 text-white' // Blue for current status
-                : 'bg-gray-200 text-gray-500' // Gray for other statuses
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-500'
             }`}
           >
             {option}
@@ -128,14 +125,14 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
         {isStatusChanged && (
           <Button
             onClick={saveStatusChange}
-            className="ml-4 bg-blue-600 text-white hover:bg-blue-700"
+            className="w-full md:w-auto bg-blue-600 text-white hover:bg-blue-700"
           >
             Speichern
           </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-6 border-t">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-4">
         <div>
           <label className="text-gray-500 text-sm">Name</label>
           <p className="text-gray-800 text-lg font-semibold">{lead.fullName}</p>
@@ -160,13 +157,13 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
           <label className="text-gray-500 text-sm">Telefon</label>
           <p className="text-gray-800 text-lg font-semibold">{lead.phone}</p>
         </div>
-        <div>
+        <div className="col-span-1 md:col-span-2">
           <label className="text-gray-500 text-sm">Adresse</label>
           <p className="text-gray-800 text-lg font-semibold">{lead.address}</p>
         </div>
       </div>
 
-      <Button variant="outline" onClick={() => router.back()} className="mt-6">
+      <Button variant="outline" onClick={() => router.back()} className="mt-6 w-full md:w-auto">
         Zurück zu den Leads
       </Button>
 
