@@ -48,3 +48,9 @@ git commit -m "Add secret.json to .gitignore"
 .env
 .env.local
 src/app/secret.json
+secret.json
+
+echo "src/app/secret.json" >> .gitignore
+git add .gitignore
+git commit -m "Add secret.json to .gitignore"
+
