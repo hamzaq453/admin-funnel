@@ -38,3 +38,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+echo "src/app/secret.json" >> .gitignore
+# Stage and commit the updated .gitignore file
+git add .gitignore
+git commit -m "Add secret.json to .gitignore"
+
+
+.env
+.env.local
+src/app/secret.json

@@ -2,7 +2,8 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { GoogleAuth } from 'google-auth-library';
-import path from 'path';
+import 'dotenv/config';
+
 
 const SCOPES = ['https://www.googleapis.com/auth/analytics.readonly'];
 const PROPERTY_ID = '465621104'; // replace with your GA4 property ID
@@ -10,7 +11,7 @@ const PROPERTY_ID = '465621104'; // replace with your GA4 property ID
 async function fetchAnalyticsData() {
   const auth = new GoogleAuth({
     scopes: SCOPES,
-    keyFile: path.join(process.cwd(), 'src/app/secret.json'), // Ensure this path is correct
+    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Use environment variable
   });
 
   const analyticsDataClient = google.analyticsdata({
