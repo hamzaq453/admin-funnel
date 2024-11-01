@@ -1,8 +1,33 @@
-// src/app/pages/AnalyticsPage.tsx
 'use client';
 import { useEffect, useState } from 'react';
-import { Line, Pie, Doughnut } from 'react-chartjs-2';
+import { Pie, Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
+
+// Define specific types for analytics data structure
+interface SessionSourceData {
+  Direct: number;
+  Organic: number;
+  Referral: number;
+}
+
+interface DeviceCategoryData {
+  Desktop: number;
+  Mobile: number;
+  Tablet: number;
+}
+
+interface DimensionValue {
+  value: string;
+}
+
+interface MetricValue {
+  value: string;
+}
+
+interface AnalyticsRow {
+  dimensionValues: DimensionValue[];
+  metricValues: MetricValue[];
+}
 
 interface AnalyticsData {
   activeUsers: number;
@@ -17,12 +42,12 @@ interface AnalyticsData {
   totalRevenue: number;
   country: string;
   city: string;
-  deviceCategory: { Desktop: number; Mobile: number; Tablet: number };
+  deviceCategory: DeviceCategoryData;
   platform: string;
-  sessionSource: { Direct: number; Organic: number; Referral: number };
+  sessionSource: SessionSourceData;
   sessionMedium: string;
   landingPage: { url: string; views: number }[];
-  demographics: Record<string, number>; // Add this line
+  demographics: Record<string, number>;
 }
 
 const AnalyticsPage = () => {
@@ -34,77 +59,63 @@ const AnalyticsPage = () => {
       try {
         const response = await fetch('/api/analytics');
         const result = await response.json();
-  
-        console.log("API Response on Frontend:", result); // Log the entire API response for debugging
-  
-        // Calculate the total average session duration across rows
+
+        console.log("API Response on Frontend:", result);
+
         let totalSessionDuration = 0;
         let count = 0;
-  
-        // Initialize sessionSource, deviceCategory, and country counts
-        const sessionSourceData = { Direct: 0, Organic: 0, Referral: 0 };
-        const deviceCategoryData = { Desktop: 0, Mobile: 0, Tablet: 0 };
-        const countryData: Record<string, number> = {}; // To store counts for each country
-  
-        result.rows.forEach((row: any) => {
-          // Parse averageSessionDuration
+
+        const sessionSourceData: SessionSourceData = { Direct: 0, Organic: 0, Referral: 0 };
+        const deviceCategoryData: DeviceCategoryData = { Desktop: 0, Mobile: 0, Tablet: 0 };
+        const countryData: Record<string, number> = {};
+
+        result.rows.forEach((row: AnalyticsRow) => {
           const duration = parseFloat(row.metricValues[3]?.value || '0');
           if (duration > 0) {
             totalSessionDuration += duration;
             count += 1;
           }
-  
-          // Parse sessionSource
+
           const source = row.dimensionValues[5]?.value || '(not set)';
           if (source === '(direct)') sessionSourceData.Direct += 1;
           else if (source === 'organic') sessionSourceData.Organic += 1;
           else if (source === 'referral') sessionSourceData.Referral += 1;
-  
-          // Parse deviceCategory
+
           const device = row.dimensionValues[3]?.value.toLowerCase();
           if (device === 'desktop') deviceCategoryData.Desktop += 1;
           else if (device === 'mobile') deviceCategoryData.Mobile += 1;
           else if (device === 'tablet') deviceCategoryData.Tablet += 1;
-  
-          // Parse country
+
           const country = row.dimensionValues[1]?.value || 'Unknown';
           countryData[country] = (countryData[country] || 0) + 1;
         });
-  
-        console.log("Parsed Session Source Data:", sessionSourceData); // Debugging log
-        console.log("Parsed Device Category Data:", deviceCategoryData); // Debugging log
-        console.log("Parsed Country Data:", countryData); // Debugging log
-  
+
         const averageSessionDuration = count > 0 ? totalSessionDuration / count : 0;
-  
+
         const parsedData: AnalyticsData = {
           activeUsers: parseInt(result.rows[0].metricValues[0].value),
           newUsers: parseInt(result.rows[0].metricValues[1].value),
           engagementRate: `${parseFloat(result.rows[0].metricValues[2].value).toFixed(2)}%`,
-          
-          // Display average session duration in "m s" format
           averageSessionDuration: `${Math.floor(averageSessionDuration / 60)}m ${Math.floor(averageSessionDuration % 60)}s`,
-          
           bounceRate: `${parseFloat(result.rows[0].metricValues[4].value).toFixed(2)}%`,
           eventCount: parseInt(result.rows[0].metricValues[5].value),
           sessions: parseInt(result.rows[0].metricValues[6].value),
           screenPageViews: parseInt(result.rows[0].metricValues[7].value),
           sessionsPerUser: `${parseFloat(result.rows[0].metricValues[8].value).toFixed(2)}`,
           totalRevenue: parseFloat(result.rows[0].metricValues[9].value),
-          
           country: result.rows[0].dimensionValues[1].value,
           city: result.rows[0].dimensionValues[2].value,
           deviceCategory: deviceCategoryData,
           platform: result.rows[0].dimensionValues[4]?.value || 'N/A',
           sessionSource: sessionSourceData,
           sessionMedium: result.rows[0].dimensionValues[6]?.value || 'N/A',
-          landingPage: result.rows.map((row: any) => ({
+          landingPage: result.rows.map((row: AnalyticsRow) => ({
             url: row.dimensionValues[7]?.value || 'N/A',
             views: parseInt(row.metricValues[7]?.value || '0'),
           })),
-          demographics: countryData, // Add country data here
+          demographics: countryData,
         };
-  
+
         setData(parsedData);
         setLoading(false);
       } catch (error) {
@@ -112,45 +123,26 @@ const AnalyticsPage = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
-  
-  
-  
 
   if (loading) return <p className="text-center text-gray-500">Loading data...</p>;
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
-      <Header />
+      
       {data && (
         <>
-        <TrafficDemographicsCountries data={data}/>
-        <TrafficDemographics data={data}/>
+          <TrafficDemographicsCountries data={data} />
+          <TrafficDemographics data={data} />
           <HeroMetrics data={data} />
           <EngagementBehavior data={data} />
           <TopLandingPages data={data} />
         </>
       )}
     </div>
-  );
-};
-
-
-const Header = () => (
-  <header className="flex justify-between items-center mb-6">
-    <h1 className="text-3xl font-semibold text-gray-800">Analytics Overview</h1>
-    <div>
-      <select className="p-2 border rounded-md bg-white text-gray-700">
-        <option>Last 7 Days</option>
-        <option>Last 30 Days</option>
-        <option>Last 90 Days</option>
-      </select>
-    </div>
-  </header>
-);
-
+  );}
 
 const HeroMetrics = ({ data }: { data: AnalyticsData }) => {
   // Directly use averageSessionDuration as provided by GA4
