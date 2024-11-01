@@ -130,52 +130,46 @@ const AnalyticsPage = () => {
   if (loading) return <p className="text-center text-gray-500">Loading data...</p>;
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 sm:p-8">
+    <div className="bg-gray-100 min-h-screen p-8">
+      
       {data && (
         <>
-          <div className="mb-8">
-            <TrafficDemographicsCountries data={data} />
-          </div>
-          <div className="mb-8">
-            <TrafficDemographics data={data} />
-          </div>
-          <div className="mb-8">
-            <HeroMetrics data={data} />
-          </div>
-          <div className="mb-8">
-            <EngagementBehavior data={data} />
-          </div>
-          <div className="mb-8">
-            <TopLandingPages data={data} />
-          </div>
+          <TrafficDemographicsCountries data={data} />
+          <TrafficDemographics data={data} />
+          <HeroMetrics data={data} />
+          <EngagementBehavior data={data} />
+          <TopLandingPages data={data} />
         </>
       )}
     </div>
-  );
-}
+  );}
 
-// HeroMetrics Component
 const HeroMetrics = ({ data }: { data: AnalyticsData }) => {
+  // Directly use averageSessionDuration as provided by GA4
+  const averageEngagementTime = `${Math.floor(parseFloat(data.averageSessionDuration) / 60)}m ${Math.floor(parseFloat(data.averageSessionDuration) % 60)}s`;
+
   const metrics = [
     { label: 'Active Users', value: data.activeUsers },
     { label: 'New Users', value: data.newUsers },
     { label: 'Sessions', value: data.sessions },
-    { label: 'Average Engagement Time', value: data.averageSessionDuration },
+    { label: 'Average Engagement Time', value: averageEngagementTime },
   ];
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+    <section className="grid grid-cols-2 gap-6 mb-8">
       {metrics.map((metric, index) => (
-        <div key={index} className="bg-white p-4 sm:p-6 rounded-lg shadow-md text-center">
-          <h2 className="text-md sm:text-lg font-semibold text-gray-600">{metric.label}</h2>
-          <p className="text-xl sm:text-2xl font-bold text-gray-800">{metric.value}</p>
+        <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center">
+          <h2 className="text-lg font-semibold text-gray-600">{metric.label}</h2>
+          <p className="text-2xl font-bold text-gray-800">{metric.value}</p>
         </div>
       ))}
     </section>
   );
 };
 
-// EngagementBehavior Component
+
+
+
 const EngagementBehavior = ({ data }: { data: AnalyticsData }) => {
   const behaviorMetrics = [
     { label: 'Engagement Rate', value: data.engagementRate },
@@ -186,13 +180,13 @@ const EngagementBehavior = ({ data }: { data: AnalyticsData }) => {
   ];
 
   return (
-    <section className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-8">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Engagement & Behavior</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <section className="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Engagement & Behavior</h2>
+      <div className="grid grid-cols-2 gap-4">
         {behaviorMetrics.map((metric, index) => (
           <div key={index} className="text-center p-4 bg-gray-50 rounded-md">
-            <h3 className="text-sm sm:text-md font-semibold text-gray-600">{metric.label}</h3>
-            <p className="text-lg sm:text-xl font-bold text-gray-800">{metric.value}</p>
+            <h3 className="text-md font-semibold text-gray-600">{metric.label}</h3>
+            <p className="text-xl font-bold text-gray-800">{metric.value}</p>
           </div>
         ))}
       </div>
@@ -200,7 +194,6 @@ const EngagementBehavior = ({ data }: { data: AnalyticsData }) => {
   );
 };
 
-// TrafficDemographicsCountries Component
 const TrafficDemographicsCountries = ({ data }: { data: AnalyticsData }) => {
   const trafficData = {
     labels: ['Direct', 'Organic', 'Referral'],
@@ -230,25 +223,46 @@ const TrafficDemographicsCountries = ({ data }: { data: AnalyticsData }) => {
     ],
   };
 
+  // Prepare demographics data for the pie chart
+  const demographicsLabels = Object.keys(data.demographics);
+  const demographicsValues = Object.values(data.demographics);
+  const demographicsColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']; // Add more colors if needed
+
+  const demographicsData = {
+    labels: demographicsLabels,
+    datasets: [
+      {
+        data: demographicsValues,
+        backgroundColor: demographicsColors.slice(0, demographicsLabels.length),
+      },
+    ],
+  };
+
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+    <section className="grid grid-cols-3 gap-6 mb-8">
+      <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Traffic Sources</h2>
-        <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
+        <div style={{ width: '200px', height: '200px', margin: '0 auto' }}>
           <Pie data={trafficData} />
         </div>
       </div>
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+      <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Device Categories</h2>
-        <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
+        <div style={{ width: '200px', height: '200px', margin: '0 auto' }}>
           <Doughnut data={deviceData} />
+        </div>
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">User Demographics</h2>
+        <div style={{ width: '200px', height: '200px', margin: '0 auto' }}>
+          <Pie data={demographicsData} />
         </div>
       </div>
     </section>
   );
 };
 
-// TrafficDemographics Component (Same concept of single-column view on mobile)
+
 const TrafficDemographics = ({ data }: { data: AnalyticsData }) => {
   const trafficData = {
     labels: ['Direct', 'Organic', 'Referral'],
@@ -279,16 +293,16 @@ const TrafficDemographics = ({ data }: { data: AnalyticsData }) => {
   };
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+    <section className="grid grid-cols-2 gap-6 mb-8">
+      <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Traffic Sources</h2>
-        <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
+        <div style={{ width: '300px', height: '300px', margin: '0 auto' }}>
           <Pie data={trafficData} />
         </div>
       </div>
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+      <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Device Categories</h2>
-        <div style={{ width: '100%', height: '200px', margin: '0 auto' }}>
+        <div style={{ width: '300px', height: '300px', margin: '0 auto' }}>
           <Doughnut data={deviceData} />
         </div>
       </div>
@@ -296,12 +310,12 @@ const TrafficDemographics = ({ data }: { data: AnalyticsData }) => {
   );
 };
 
-// TopLandingPages Component
+
 const TopLandingPages = ({ data }: { data: AnalyticsData }) => {
   const topPages = data.landingPage.slice(0, 5);
 
   return (
-    <section className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+    <section className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Top Landing Pages</h2>
       <table className="w-full text-left">
         <thead>
