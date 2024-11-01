@@ -11,8 +11,9 @@ const PROPERTY_ID = '465621104'; // replace with your GA4 property ID
 async function fetchAnalyticsData() {
   const auth = new GoogleAuth({
     scopes: SCOPES,
-    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Use environment variable
+    credentials: JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS as string),
   });
+  
 
   const analyticsDataClient = google.analyticsdata({
     version: 'v1beta',
