@@ -85,6 +85,24 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
     }
   };
 
+  // Define color function for status buttons
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Neu':
+        return 'bg-blue-500 text-white';
+      case 'Ausstehend':
+        return 'bg-yellow-500 text-white';
+      case 'In Bearbeitung':
+        return 'bg-orange-500 text-white';
+      case 'Genehmigt':
+        return 'bg-green-500 text-white';
+      case 'Abgelehnt':
+        return 'bg-red-500 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
   if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
@@ -114,9 +132,7 @@ const LeadDetailPage: React.FC<LeadDetailPageProps> = ({ id }) => {
             key={option}
             onClick={() => handleStatusChange(option)}
             className={`px-4 py-2 rounded-full w-full md:w-auto font-semibold ${
-              status === option
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-500'
+              status === option ? getStatusColor(option) : 'bg-gray-200 text-gray-500'
             }`}
           >
             {option}
